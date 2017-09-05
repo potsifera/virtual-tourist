@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="aJF-tc-kTf">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="aJF-tc-kTf">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Travel Locations Map View-->
@@ -15,14 +19,14 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xOb-y4-786">
-                                <rect key="frame" x="-2" y="44" width="604" height="556"/>
+                                <rect key="frame" x="-6" y="44" width="387" height="623"/>
                             </mapView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="xOb-y4-786" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-22" id="8BD-yI-rLn"/>
                             <constraint firstItem="xOb-y4-786" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="YvQ-Ca-Fxt"/>
@@ -48,17 +52,17 @@
                         <viewControllerLayoutGuide type="bottom" id="RBU-Kw-C7Q"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="PLR-7t-9Oy">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="EqC-pE-w2j">
-                                <rect key="frame" x="-2" y="0.0" width="604" height="240"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="EqC-pE-w2j">
+                                <rect key="frame" x="-6" y="0.0" width="387" height="240"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="240" id="QQJ-Uy-e9O"/>
                                 </constraints>
                             </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="juj-Ec-QeM">
-                                <rect key="frame" x="0.0" y="560" width="600" height="40"/>
+                                <rect key="frame" x="-4" y="627" width="383" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="O43-uh-rMm"/>
                                 </constraints>
@@ -72,9 +76,9 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Qi5-C2-TH9"/>
                                 </items>
                             </toolbar>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="YQx-qs-C1S">
-                                <rect key="frame" x="0.0" y="238" width="600" height="322"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="YQx-qs-C1S">
+                                <rect key="frame" x="-4" y="238" width="383" height="322"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Aj5-Fy-3gk">
                                     <size key="itemSize" width="178" height="127"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -96,9 +100,8 @@
                                                     <rect key="frame" x="79" y="54" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <color key="backgroundColor" red="0.39607843139999999" green="0.58039215690000001" blue="0.81960784310000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.39607843139999999" green="0.58039215690000001" blue="0.81960784310000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstItem="Obj-kA-SJj" firstAttribute="top" secondItem="key-Wh-6VV" secondAttribute="top" id="Bus-7D-Z6a"/>
                                             <constraint firstItem="Obj-kA-SJj" firstAttribute="leading" secondItem="key-Wh-6VV" secondAttribute="leading" id="Elq-au-rUE"/>
@@ -119,7 +122,7 @@
                                 </connections>
                             </collectionView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="YQx-qs-C1S" firstAttribute="top" secondItem="EqC-pE-w2j" secondAttribute="bottom" constant="-2" id="10W-dG-ws9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="EqC-pE-w2j" secondAttribute="trailing" constant="-22" id="5GR-AQ-tCw"/>

@@ -11,33 +11,33 @@ import Foundation
 class FlickrClient:NSObject {
     
     // shared session
-    var session = NSURLSession.sharedSession()
+    var session = URLSession.shared
     
-    func taskForGet( parameters:[String:AnyObject], completionHandlerForGet:(result:AnyObject!, error:NSError?)->Void) -> NSURLSessionDataTask{
+    func taskForGet( _ parameters:[String:AnyObject], completionHandlerForGet:@escaping (_ result:AnyObject?, _ error:NSError?)->Void) -> URLSessionDataTask{
 
         /* 1. Set the parameters */
         var completeParameters = parameters
-        completeParameters[FlickrConstants.FlickrParameterKeys.Method] = FlickrConstants.FlickrParameterValues.SearchMethod
-        completeParameters[FlickrConstants.FlickrParameterKeys.APIKey] = FlickrConstants.FlickrParameterValues.APIKey
-        completeParameters[FlickrConstants.FlickrParameterKeys.SafeSearch] = FlickrConstants.FlickrParameterValues.UseSafeSearch
-        completeParameters[FlickrConstants.FlickrParameterKeys.Extras] =  FlickrConstants.FlickrParameterValues.MediumURL
-        completeParameters[FlickrConstants.FlickrParameterKeys.Format] = FlickrConstants.FlickrParameterValues.ResponseFormat
-        completeParameters[FlickrConstants.FlickrParameterKeys.NoJSONCallback] =  FlickrConstants.FlickrParameterValues.DisableJSONCallback
-        completeParameters[FlickrConstants.FlickrParameterKeys.Page] = "\(arc4random_uniform(10))"
-        completeParameters[FlickrConstants.FlickrParameterKeys.PerPage] = FlickrConstants.FlickrParameterValues.PhotosPerPage
+        completeParameters[FlickrConstants.FlickrParameterKeys.Method] = FlickrConstants.FlickrParameterValues.SearchMethod as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.APIKey] = FlickrConstants.FlickrParameterValues.APIKey as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.SafeSearch] = FlickrConstants.FlickrParameterValues.UseSafeSearch as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.Extras] =  FlickrConstants.FlickrParameterValues.MediumURL as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.Format] = FlickrConstants.FlickrParameterValues.ResponseFormat as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.NoJSONCallback] =  FlickrConstants.FlickrParameterValues.DisableJSONCallback as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.Page] = "\(arc4random_uniform(10))" as AnyObject
+        completeParameters[FlickrConstants.FlickrParameterKeys.PerPage] = FlickrConstants.FlickrParameterValues.PhotosPerPage as AnyObject
 
         
         /* 2/3. Build the URL, Configure the request */
-        let request = NSURLRequest(URL: urlFromParameters(completeParameters))
+        let request = URLRequest(url: urlFromParameters(completeParameters))
         //print(urlFromParameters(completeParameters))
 
         /* 4. Make the request */
 
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request) { data, response, error in
-            func sendError(error: String){
+        let session = URLSession.shared
+        let task = session.dataTask(with: request, completionHandler: { data, response, error in
+            func sendError(_ error: String){
                 let userInfo = [NSLocalizedDescriptionKey: error]
-                completionHandlerForGet(result: nil, error: NSError(domain: "FlickrTaskForGetMethod", code:1, userInfo: userInfo))
+                completionHandlerForGet(nil, NSError(domain: "FlickrTaskForGetMethod", code:1, userInfo: userInfo))
             }
             
             /* GUARD: Was there an error? */
@@ -47,7 +47,7 @@ class FlickrClient:NSObject {
             }
             
             /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
                 sendError("Incorrect Credentials")
                 //print("Your request returned a status code other than 2xx!")
                 //print(response)
@@ -63,7 +63,7 @@ class FlickrClient:NSObject {
             self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
 
             
-        }
+        }) 
         task.resume()
         
         return task
@@ -73,33 +73,33 @@ class FlickrClient:NSObject {
     
     
     // create a URL from parameters
-    private func urlFromParameters(parameters: [String:AnyObject]) -> NSURL{
-        let components = NSURLComponents()
+    fileprivate func urlFromParameters(_ parameters: [String:AnyObject]) -> URL{
+        var components = URLComponents()
         components.scheme = FlickrConstants.Components.APIScheme
         components.host = FlickrConstants.Components.APIHost
         components.path = FlickrConstants.Components.APIPath
         
-        components.queryItems = [NSURLQueryItem]()
+        components.queryItems = [URLQueryItem]()
         
         for (key, value) in parameters {
-            let queryItem = NSURLQueryItem(name: key, value: "\(value)")
+            let queryItem = URLQueryItem(name: key, value: "\(value)")
             components.queryItems!.append(queryItem)
         }
         
-        return components.URL!
+        return components.url!
         
     }
 
     // given raw JSON, return a usable Foundation object
-    private func convertDataWithCompletionHandler(data: NSData, completionHandlerForConvertData: (result: AnyObject!, error:NSError?)->Void ) {
+    fileprivate func convertDataWithCompletionHandler(_ data: Data, completionHandlerForConvertData: (_ result: AnyObject?, _ error:NSError?)->Void ) {
         
         var parsedResult: AnyObject!
         do {
-            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            completionHandlerForConvertData(result: parsedResult, error: nil)
+            parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! AnyObject
+            completionHandlerForConvertData(parsedResult, nil)
         } catch {
             let userInfo = [NSLocalizedDescriptionKey: "Could not parse the data as JSON from parse: \(data)"]
-            completionHandlerForConvertData(result:nil, error: NSError(domain: "convertDataWithCompletionHandlerParse", code: 1, userInfo: userInfo))
+            completionHandlerForConvertData(nil, NSError(domain: "convertDataWithCompletionHandlerParse", code: 1, userInfo: userInfo))
         }
         
     }

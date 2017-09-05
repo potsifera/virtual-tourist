@@ -14,8 +14,8 @@ class Photo: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
     convenience init(imageUrl: String,  context: NSManagedObjectContext) {
-        if let ent = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context){
-            self.init(entity: ent, insertIntoManagedObjectContext: context)
+        if let ent = NSEntityDescription.entity(forEntityName: "Photo", in: context){
+            self.init(entity: ent, insertInto: context)
             self.imageURL = imageUrl
             self.imageData = nil
             

@@ -23,7 +23,7 @@ class TravelLocationsMapView: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Get the stack
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         stack = delegate.stack
         
         mapView.delegate = self
@@ -38,10 +38,10 @@ class TravelLocationsMapView: UIViewController, MKMapViewDelegate {
     /*handles the tapping and holding from http://stackoverflow.com/questions/30858360/adding-a-pin-annotation-to-a-map-view-on-a-long-press-in-swift */
     
     //pin with name of the place
-    func handleTap(gestureRecognizer:UIGestureRecognizer){
-        if gestureRecognizer.state == UIGestureRecognizerState.Began {
-            let touchPoint = gestureRecognizer.locationInView(mapView)
-            let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+    func handleTap(_ gestureRecognizer:UIGestureRecognizer){
+        if gestureRecognizer.state == UIGestureRecognizerState.began {
+            let touchPoint = gestureRecognizer.location(in: mapView)
+            let newCoordinates = mapView.convert(touchPoint, toCoordinateFrom: mapView)
             
             CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude, longitude: newCoordinates.longitude), completionHandler: {(placemarks, error) -> Void in
                 if error == nil && placemarks!.count > 0 {
@@ -66,9 +66,9 @@ class TravelLocationsMapView: UIViewController, MKMapViewDelegate {
     // loads a pin that's already stored
     func loadPinsFromDB() {
         var pins = [Pin]()
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
         do {
-            let results = try stack.context.executeFetchRequest(fetchRequest)
+            let results = try stack.context.fetch(fetchRequest)
             if let results = results as? [Pin] {
                 pins = results
             }
@@ -80,24 +80,24 @@ class TravelLocationsMapView: UIViewController, MKMapViewDelegate {
     
     
     // displays an error alert
-    func displayErrorAlert(title: String, error: String) {
-        let alert = UIAlertController(title: title, message: error, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+    func displayErrorAlert(_ title: String, error: String) {
+        let alert = UIAlertController(title: title, message: error, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     // MARK: - ------ MKMapViewDelegate
     
     // Here we create a view with a "right callout accessory view".
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseId = "pin"
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
         
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = true
            // pinView!.pinTintColor = UIColor.purpleColor()
-            pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         }
         else {
             pinView!.annotation = annotation
@@ -107,10 +107,10 @@ class TravelLocationsMapView: UIViewController, MKMapViewDelegate {
     }
     
     // This delegate method is implemented to respond to taps on the name of the pin
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
             
-            let photoController = storyboard!.instantiateViewControllerWithIdentifier("photoAlbumView") as! PhotoAlbumView
+            let photoController = storyboard!.instantiateViewController(withIdentifier: "photoAlbumView") as! PhotoAlbumView
             photoController.latitude = self.latitude
             photoController.longitude = self.longitude
             photoController.pin = view.annotation as! Pin

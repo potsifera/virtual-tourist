@@ -28,12 +28,12 @@ class PhotoAlbumView: UIViewController {
     let flickrClient = FlickrClient.sharedInstance()
     
     //fetched results controller saves photos
-    var fetchedResultsController: NSFetchedResultsController!
+    var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>!
     //NSFetchedResultsControllerDelegate  variables
-    var insertedIndexCells: [NSIndexPath]!
-    var deletedIndexCells: [NSIndexPath]!
+    var insertedIndexCells: [IndexPath]!
+    var deletedIndexCells: [IndexPath]!
     //coreDataStack
-    var stack:CoreDataStack! = nil
+    var stack:CoreDataStack! 
     //pin
     var pin: Pin!
     
@@ -42,7 +42,7 @@ class PhotoAlbumView: UIViewController {
         super.viewDidLoad()
         placeMapPin()
         // Get the stack
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         stack = delegate.stack
         
         if fetchPhotos().isEmpty {
@@ -57,7 +57,7 @@ class PhotoAlbumView: UIViewController {
         // get dimensions for collection cells
         func getDimension()->CGFloat {
             var frameDimension:CGFloat = 0
-            switch(UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation)){
+            switch(UIDeviceOrientationIsLandscape(UIDevice.current.orientation)){
             case true:  //landsacape mode
                 frameDimension = view.frame.size.height
             case false: //portrait mode
@@ -68,7 +68,7 @@ class PhotoAlbumView: UIViewController {
         
         dimension = getDimension()
         collectionViewFlowLayout.minimumInteritemSpacing = space
-        collectionViewFlowLayout.itemSize = CGSizeMake(dimension, dimension)
+        collectionViewFlowLayout.itemSize = CGSize(width: dimension, height: dimension)
         
     }//viewDidLoad end
     
@@ -81,7 +81,7 @@ class PhotoAlbumView: UIViewController {
     
     //searches for flickr photos
     func searchPhotos(){
-        self.refreshButton.enabled = false
+        self.refreshButton.isEnabled = false
         downloadedImages = 0
         flickrClient.getPhotosURL(1, latitude: pin.latitude, longitude: pin.longitude) { (result, error) in
             if error != nil{
@@ -97,7 +97,7 @@ class PhotoAlbumView: UIViewController {
         var photos = [Photo]()
         
         //Create the fetch request
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         fetchRequest.sortDescriptors = []
         fetchRequest.predicate = NSPredicate(format: "pin = %@", pin)
         
@@ -120,7 +120,7 @@ class PhotoAlbumView: UIViewController {
     }
     
     //saves only the photos URL
-    func savePhotosUrlInCoreData(photosUrl: [String]){
+    func savePhotosUrlInCoreData(_ photosUrl: [String]){
         performUIUpdatesOnMain{
             for url in photosUrl{
                 let photo = Photo(imageUrl: url, context: self.stack.context)
@@ -136,11 +136,11 @@ class PhotoAlbumView: UIViewController {
     }
     
     //gets a new set of fotos url's
-    @IBAction func refreshPhotos(sender: UIBarButtonItem) {
+    @IBAction func refreshPhotos(_ sender: UIBarButtonItem) {
         //delete photos from context
         canDeleteImages = false
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            stack.context.deleteObject(photo)
+            stack.context.delete(photo)
             
         }
         //delete from core data, which deletes from the collectionView
@@ -159,32 +159,32 @@ class PhotoAlbumView: UIViewController {
 extension PhotoAlbumView : UICollectionViewDataSource {
     
     //number of items
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fetchedResultsController.sections![section].numberOfObjects
         
     }
     
     // cell for item
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         //create the cell
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("flickrCell", forIndexPath: indexPath) as! PhotoViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! PhotoViewCell
         cell.imageView!.image = UIImage(named: "placeholder")
-        cell.activityIndicator.hidden = false
+        cell.activityIndicator.isHidden = false
         cell.activityIndicator.startAnimating()
         
         // checks if there are objects
         if (self.fetchedResultsController.fetchedObjects?.count != 0) {
             
             // Find the right photo for this indexpath
-            let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+            let photo = fetchedResultsController.object(at: indexPath) as! Photo
             
             if  let data = photo.imageData {
                 //image already downloaded
                 performUIUpdatesOnMain{
-                    cell.imageView.image = UIImage(data:data)
+                    cell.imageView.image = UIImage(data:data as Data)
                     cell.activityIndicator.stopAnimating()
-                    cell.activityIndicator.hidden = true
+                    cell.activityIndicator.isHidden = true
                 }
                 
             } else {
@@ -195,7 +195,7 @@ extension PhotoAlbumView : UICollectionViewDataSource {
                         performUIUpdatesOnMain{
                             //if finished downloading all images enable the refresh button
                             if self.downloadedImages == Int(FlickrConstants.FlickrParameterValues.PhotosPerPage)! {
-                                self.refreshButton.enabled = true
+                                self.refreshButton.isEnabled = true
                                 self.canDeleteImages = true
                             }
                             
@@ -209,7 +209,7 @@ extension PhotoAlbumView : UICollectionViewDataSource {
                             // update the cell if there was a cell
                             cell.imageView.image = UIImage(data:data)
                             cell.activityIndicator.stopAnimating()
-                            cell.activityIndicator.hidden = true
+                            cell.activityIndicator.isHidden = true
                         }
                     } else {
                         print("Couldn't download image from URL")
@@ -227,13 +227,13 @@ extension PhotoAlbumView : UICollectionViewDataSource {
 
 extension PhotoAlbumView: UICollectionViewDelegate {
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if canDeleteImages {
             // Find the right photo for this indexpath
-            let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+            let photo = fetchedResultsController.object(at: indexPath) as! Photo
             
             //delete from core data, which deletes from the collectionView
-            stack.context.deleteObject(photo)
+            stack.context.delete(photo)
             do{
                 try self.stack.saveContext()
             }catch{
@@ -250,27 +250,27 @@ extension PhotoAlbumView: UICollectionViewDelegate {
 
 extension PhotoAlbumView: NSFetchedResultsControllerDelegate {
     
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         //print("controllerWillChangeContent")
-        insertedIndexCells = [NSIndexPath]()
-        deletedIndexCells = [NSIndexPath]()
+        insertedIndexCells = [IndexPath]()
+        deletedIndexCells = [IndexPath]()
     }
     
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         //print("controllerDidChangeContent")
         collectionView.performBatchUpdates({
-            self.collectionView.insertItemsAtIndexPaths(self.insertedIndexCells)
-            self.collectionView.deleteItemsAtIndexPaths(self.deletedIndexCells)
+            self.collectionView.insertItems(at: self.insertedIndexCells)
+            self.collectionView.deleteItems(at: self.deletedIndexCells)
             }, completion: nil)
         
     }
     
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         //print("didChangeObject")
         switch type {
-        case .Insert:
+        case .insert:
             insertedIndexCells.append(newIndexPath!)
-        case .Delete:
+        case .delete:
             deletedIndexCells.append(indexPath!)
         default:
             break
