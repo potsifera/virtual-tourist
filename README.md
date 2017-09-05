@@ -22,8 +22,14 @@ The app has two view controller scenes:
 Application uses CoreData to store Pins (`NSManagedObjectContext.executeFetchRequest`) and Photos 
 (`NSFetchedResultsController`) objects. All API calls run in background (`NSURLSession.dataTaskWithRequest`).
 
+## How to Users
+
+Add a pin to the map.
+Click on the pin information to see Flickr images from that location.
+You can refresh the images to change them
+
 ## Requirements
 
- - Xcode 7.2
- - Swift 2.0
+ - Xcode 8.3
+ - Swift 3.0
 
