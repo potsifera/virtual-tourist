@@ -104,7 +104,7 @@ class PhotoAlbumView: UIViewController {
         //create a fetchedResultsController
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         
-        fetchedResultsController.delegate = self
+        fetchedResultsController.delegate = self // el delegate va a funcionar solo con la Photo
         
         do {
             try fetchedResultsController.performFetch()
@@ -129,6 +129,7 @@ class PhotoAlbumView: UIViewController {
             
             do{
                 try self.stack.saveContext()
+                print("saving photosurlincoredata")
             }catch{
                 print("error while saving context")
             }
@@ -251,7 +252,7 @@ extension PhotoAlbumView: UICollectionViewDelegate {
 extension PhotoAlbumView: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        //print("controllerWillChangeContent")
+        print("controllerWillChangeContent")
         insertedIndexCells = [IndexPath]()
         deletedIndexCells = [IndexPath]()
     }
